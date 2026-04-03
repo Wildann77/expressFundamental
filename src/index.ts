@@ -35,3 +35,12 @@ app.post("/todo",(req:Request,res:Response) => {
     todos.push(newTodo)
     res.json(newTodo)
 })
+
+app.put("/todo/:id", (req:Request,res:Response) => {
+
+    const id = Number(req.params.id)
+    const {text} = req.body
+    todos = todos.map(todo => todo.id === id ? {...todo,text:text,done:!todo.done} : todo)
+
+    res.json({message : "Todo updated"})
+})
