@@ -55,3 +55,5 @@ app.delete("/todo/:id",(req:Request,res:Response) => {
     res.json({message : "Todo Deleted"})
 })
 
+const PORT = 3000   
+
