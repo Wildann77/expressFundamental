@@ -13,3 +13,7 @@ type Todo = {
 
 let todos : Todo[] = []
 
+
+app.get("/todos",(req:Request,res:Response) => {
+    res.json(todos)
+})
