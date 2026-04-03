@@ -5,3 +5,9 @@ const app = express()
 app.use(express.json())
 
 
+type Todo = {
+    id : number,
+    text : string,
+    done: boolean
+} 
+    
