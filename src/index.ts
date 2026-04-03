@@ -57,3 +57,6 @@ app.delete("/todo/:id",(req:Request,res:Response) => {
 
 const PORT = 3000   
 
+app.listen(PORT, () => {
+    console.log(`server berjalan pada port ${PORT}`)
+})
