@@ -10,4 +10,6 @@ type Todo = {
     text : string,
     done: boolean
 } 
-    
+
+let todos : Todo[] = []
+
