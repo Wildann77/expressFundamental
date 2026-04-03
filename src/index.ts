@@ -44,3 +44,14 @@ app.put("/todo/:id", (req:Request,res:Response) => {
 
     res.json({message : "Todo updated"})
 })
+
+app.delete("/todo/:id",(req:Request,res:Response) => {
+    const id = Number(req.params.id)
+
+    todos = todos.filter(todo => 
+        todo.id !== id
+    )
+
+    res.json({message : "Todo Deleted"})
+})
+
