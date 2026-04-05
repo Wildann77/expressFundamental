@@ -1,5 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express"
-import { todo } from "node:test"
+import * as todoService from "../services/todo.service.js"
 
 export const geAllTodos = async (req: Request, res: Response, next: NextFunction) => {
     try {
