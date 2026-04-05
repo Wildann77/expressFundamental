@@ -38,3 +38,5 @@ coverage/
 
 # Bun
 bun.lock
+
+/src/generated/prisma
