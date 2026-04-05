@@ -9,11 +9,12 @@ app.use(express.json())
 
 app.use("/todos", todoRoutes)
 
-app.use((req:any,res:any,next:any,err:any) => {
+app.use((err: any, req: any, res: any, next: any) => {
     res.status(400).json({
-        message : err.message
+        message: err.message
     })
 })
+
 
 const port = 3000
 app.listen(port, () => {
