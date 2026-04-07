@@ -1,22 +1,27 @@
 import { prisma } from "../lib/prisma.js"
 
+export const getTodos = async (userId: number, query: any) => {
+    const { page = 1, limit = 10, search = "" } = query
 
-export const getTodos = async () => {
-    return prisma.todo.findMany()
-}
-
-
-export const createTodo = async (text: string) => {
-    return prisma.todo.create({
-        data: { text }
+    return prisma.todo.findMany({
+        where: {
+            userId,
+            text: { contains: search }
+        },
+        skip: (page - 1) * limit,
+        take: Number(limit)
     })
 }
 
-export const updateTodo = async (id: number, text: string) => {
-    const todo = await prisma.todo.findUnique({ where: { id } })
-    if (!todo) {
-        throw new Error("Todo not found")
-    }
+export const createTodo = async (userId: number, text: string) => {
+    return prisma.todo.create({
+        data: { text, userId }
+    })
+}
+
+export const updateTodo = async (id: number, userId: number, text?: string) => {
+    const todo = await prisma.todo.findFirst({ where: { id, userId } })
+    if (!todo) throw new Error("Not found")
 
     return prisma.todo.update({
         where: { id },
@@ -25,9 +30,9 @@ export const updateTodo = async (id: number, text: string) => {
             done: !todo.done
         }
     })
-
 }
-export const deleteTodo = async (id: number) => {
+
+export const deleteTodo = async (id: number, userId: number) => {
     return prisma.todo.delete({
         where: { id }
     })
