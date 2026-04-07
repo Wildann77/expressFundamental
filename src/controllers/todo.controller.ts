@@ -11,24 +11,20 @@ export const geAllTodos = async (req: Request, res: Response, next: NextFunction
     }
 }
 
+
 export const createTodo = async (req: Request, res: Response, next: NextFunction) => {
-
     try {
-
         const { text } = req.body
-
         if (!text) {
             return res.json({
                 message: "Text is required"
             })
         }
-
         const todo = await todoService.createTodo(text)
         res.json(todo)
     } catch (error) {
         next(error)
     }
-
 }
 
 export const updateTodo = async (req: Request, res: Response, next: NextFunction) => {

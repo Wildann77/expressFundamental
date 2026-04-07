@@ -12,20 +12,21 @@ export const createTodo = async (text: string) => {
     })
 }
 
-export const updateTodo = async (id: number, text: string) => {
-    const todo = await prisma.todo.findUnique({ where: { id } })
-    if (!todo) {
-        throw new Error("Todo not found")
+
+export const updateTodo = async(id:number,text:string) => {
+    const todo = await prisma.todo.findUnique({where:{id}})
+
+    if(!todo){
+        throw new Error("todo not found")
     }
 
-    return prisma.todo.update({
-        where: { id },
-        data: {
-            text: text || todo.text,
-            done: !todo.done
+    const updatedTodo = await prisma.todo.update({
+        where:{id},
+        data:{
+            text:text || todo.text,
+            done:!todo.done
         }
     })
-
 }
 export const deleteTodo = async (id: number) => {
     return prisma.todo.delete({
