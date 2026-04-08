@@ -1,24 +1,50 @@
-import { prisma } from "../lib/prisma.js"
-import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
-import { email } from "zod"
+import { prisma } from "@/lib/prisma.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { env } from "@/config/env.js";
+import { AppError } from "@/utils/appError.js";
+import { type RegisterDTO, type LoginDTO } from "@/types/auth.types.js";
 
-export const register = async (email: string, password: string) => {
-    const hashed = await bcrypt.hash(password, 10)
+export class AuthService {
+  static async register(data: RegisterDTO) {
+    const hashed = await bcrypt.hash(data.password, 10);
 
     return prisma.user.create({
-        data: { email, password: hashed }
-    })
-}
+      data: {
+        email: data.email,
+        password: hashed,
+      },
+      select: {
+        id: true,
+        email: true,
+      },
+    });
+  }
 
-export const login = async(email:string,password:string) => {
-    const user = await prisma.user.findUnique({where : {email}})
-    if (!user) throw new Error("User not found")
+  static async login(data: LoginDTO) {
+    const user = await prisma.user.findUnique({
+      where: { email: data.email },
+    });
 
-    const valid = await bcrypt.compare(password,user.password)
-    if (!valid) throw new Error ("Wrong Password")
+    if (!user) {
+      throw new AppError("Invalid credentials", 401);
+    }
 
-    const token = jwt.sign({id:user.id},process.env.JWT_SECRET!,{expiresIn:"1d"})
+    const isValid = await bcrypt.compare(data.password, user.password);
+    if (!isValid) {
+      throw new AppError("Invalid credentials", 401);
+    }
 
-    return token
+    const token = jwt.sign({ id: user.id }, env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+      },
+      token,
+    };
+  }
 }

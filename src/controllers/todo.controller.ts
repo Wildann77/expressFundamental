@@ -1,43 +1,65 @@
-import { type Request, type Response, type NextFunction } from "express"
-import * as todoService from "../services/todo.service.js"
-import { todoSchema } from "../validations/todo.validations.js"
+import { type Request, type Response, type NextFunction } from "express";
+import { TodoService } from "@/services/todo.service.js";
+import { todoSchema } from "@/validations/todo.validations.js";
+import { type ApiResponse } from "@/types/index.js";
+import { type UpdateTodoDTO } from "@/types/todo.types.js";
 
-export const getTodos = async (req: any, res: Response, next: NextFunction) => {
+export class TodoController {
+  static async getTodos(req: Request, res: Response, next: NextFunction) {
     try {
-        const todos = await todoService.getTodos(req.user.id, req.query)
-        res.json(todos)
+      const todos = await TodoService.getTodos(req.user!.id, req.query);
+      const response: ApiResponse<typeof todos> = {
+        success: true,
+        data: todos,
+      };
+      res.json(response);
     } catch (err) {
-        next(err)
+      next(err);
     }
-}
+  }
 
-export const createTodo = async (req: any, res: Response, next: NextFunction) => {
+  static async createTodo(req: Request, res: Response, next: NextFunction) {
     try {
-        const data = todoSchema.parse(req.body)
-        const todo = await todoService.createTodo(req.user.id, data.text)
-        res.json(todo)
+      const data = todoSchema.parse(req.body);
+      const todo = await TodoService.createTodo(req.user!.id, data);
+      const response: ApiResponse<typeof todo> = {
+        success: true,
+        message: "Todo created successfully",
+        data: todo,
+      };
+      res.status(201).json(response);
     } catch (err) {
-        next(err)
+      next(err);
     }
-}
+  }
 
-export const updateTodo = async (req: any, res: Response, next: NextFunction) => {
+  static async updateTodo(req: Request, res: Response, next: NextFunction) {
     try {
-        const id = Number(req.params.id)
-        const { text } = req.body
-        const todo = await todoService.updateTodo(id, req.user.id, text)
-        res.json(todo)
+      const id = Number(req.params.id);
+      const data = todoSchema.partial().parse(req.body) as UpdateTodoDTO;
+      const todo = await TodoService.updateTodo(id, req.user!.id, data);
+      const response: ApiResponse<typeof todo> = {
+        success: true,
+        message: "Todo updated successfully",
+        data: todo,
+      };
+      res.json(response);
     } catch (err) {
-        next(err)
+      next(err);
     }
-}
+  }
 
-export const deleteTodo = async (req: any, res: Response, next: NextFunction) => {
+  static async deleteTodo(req: Request, res: Response, next: NextFunction) {
     try {
-        const id = Number(req.params.id)
-        await todoService.deleteTodo(id, req.user.id)
-        res.json({ message: "Deleted" })
+      const id = Number(req.params.id);
+      await TodoService.deleteTodo(id, req.user!.id);
+      const response: ApiResponse<null> = {
+        success: true,
+        message: "Todo deleted successfully",
+      };
+      res.json(response);
     } catch (err) {
-        next(err)
+      next(err);
     }
+  }
 }

@@ -1,39 +1,61 @@
-import { prisma } from "../lib/prisma.js"
+import { prisma } from "@/lib/prisma.js";
+import { AppError } from "@/utils/appError.js";
+import { type TodoDTO, type TodoFilterQuery } from "@/types/todo.types.js";
 
-export const getTodos = async (userId: number, query: any) => {
-    const { page = 1, limit = 10, search = "" } = query
+export class TodoService {
+  static async getTodos(userId: number, query: TodoFilterQuery) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const search = query.search || "";
 
     return prisma.todo.findMany({
-        where: {
-            userId,
-            text: { contains: search }
-        },
-        skip: (page - 1) * limit,
-        take: Number(limit)
-    })
-}
+      where: {
+        userId,
+        text: { contains: search },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+  }
 
-export const createTodo = async (userId: number, text: string) => {
+  static async createTodo(userId: number, data: TodoDTO) {
     return prisma.todo.create({
-        data: { text, userId }
-    })
-}
+      data: {
+        text: data.text,
+        userId,
+      },
+    });
+  }
 
-export const updateTodo = async (id: number, userId: number, text?: string) => {
-    const todo = await prisma.todo.findFirst({ where: { id, userId } })
-    if (!todo) throw new Error("Not found")
+  static async updateTodo(id: number, userId: number, data: Partial<TodoDTO>) {
+    const todo = await prisma.todo.findFirst({
+      where: { id, userId },
+    });
+
+    if (!todo) {
+      throw new AppError("Todo not found", 404);
+    }
 
     return prisma.todo.update({
-        where: { id },
-        data: {
-            text: text || todo.text,
-            done: !todo.done
-        }
-    })
-}
+      where: { id },
+      data: {
+        text: data.text ?? todo.text,
+        done: data.done ?? todo.done,
+      },
+    });
+  }
 
-export const deleteTodo = async (id: number, userId: number) => {
+  static async deleteTodo(id: number, userId: number) {
+    const todo = await prisma.todo.findFirst({
+      where: { id, userId },
+    });
+
+    if (!todo) {
+      throw new AppError("Todo not found", 404);
+    }
+
     return prisma.todo.delete({
-        where: { id }
-    })
+      where: { id },
+    });
+  }
 }

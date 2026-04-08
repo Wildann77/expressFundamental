@@ -6,6 +6,10 @@
     "moduleResolution": "nodenext",
     "target": "esnext",
     "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
