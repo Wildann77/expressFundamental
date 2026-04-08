@@ -1,21 +1,46 @@
-import express from "express"
-import dotenv from "dotenv"
-import authRoutes from "./routes/auth.route.js"
-import todoRoutes from "./routes/todo.route.js"
+// import express from "express"
+// import dotenv from "dotenv"
+// import authRoutes from "./routes/auth.route.js"
+// import todoRoutes from "./routes/todo.route.js"
 
-dotenv.config()
+// dotenv.config()
+
+// const app = express()
+// app.use(express.json())
+
+// app.use("/auth", authRoutes)
+// app.use("/todos", todoRoutes)
+
+// app.use((err: unknown, req: express.Request, res: express.Response, next: express.NextFunction) => {
+//     const message = err instanceof Error ? err.message : "Internal server error"
+//     res.status(500).json({ message })
+// })
+
+// app.listen(3000, () => {
+//     console.log("Server running on port 3000")
+// })
+
+import express from "express"
+import dontevn from "dotenv"
+import todoRoutes from "./routes/todo.route.js"
+import authRoutes from "./routes/auth.route.js"
+
+dontevn.config()
 
 const app = express()
 app.use(express.json())
 
-app.use("/auth", authRoutes)
 app.use("/todos", todoRoutes)
+app.use("/auth", authRoutes)
 
 app.use((err: unknown, req: express.Request, res: express.Response, next: express.NextFunction) => {
     const message = err instanceof Error ? err.message : "Internal server error"
     res.status(500).json({ message })
+
 })
 
-app.listen(3000, () => {
+const port = 3000
+
+app.listen(port, () => {
     console.log("Server running on port 3000")
 })
